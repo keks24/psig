@@ -165,7 +165,7 @@ main()
             # to:   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 0 0 0 0 1 1
             pid_signal_bin_value_concatenated="${pid_signal_bin_value_4bit_array[@]// /}"
             unset pid_signal_bin_value_1bit_array
-            for binary_position in $(eval echo "{0..$(( ${#pid_signal_bin_value_concatenated} ))}")
+            for binary_position in $(eval echo "{0..${#pid_signal_bin_value_concatenated}}")
             do
                 pid_signal_bin_value_1bit_array+=("${pid_signal_bin_value_concatenated:${binary_position}:1}")
             done
