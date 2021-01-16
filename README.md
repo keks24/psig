@@ -46,6 +46,7 @@ $ psig "${$}" 4710
 ```no-highlight
 
 PID: 23367
+Name: zsh
 Signals caught:
 ---------------
 Signal 28: SIGWINCH
@@ -81,6 +82,7 @@ Hexadecimal:  0     0     0     0     0     0     0     0     0     8     0     
 Binary:       0000  0000  0000  0000  0000  0000  0000  0000  0000  1000  0000  0000  0000  0000  0000  0000
 
 PID: 4710
+Name: awesome
 Signals caught:
 ---------------
 Signal 15: SIGTERM
