@@ -117,7 +117,7 @@ main()
         local pid_directory_path="/proc/${pid}"
         local pid_status_file="status"
         local pid_status=$(< "${pid_directory_path}/${pid_status_file}")
-        local pid_name=$(echo "${pid_status}" | awk --field-separator="Name:\t" '/Name:/ { print $2 }')
+        local pid_name=$(echo "${pid_status}" | /usr/bin/awk --field-separator="Name:\t" '/Name:/ { print $2 }')
         declare -a pid_signal_bin_value_4bit_array
         declare -a pid_signal_bin_value_1bit_array
         local hex_position
@@ -130,7 +130,7 @@ main()
         echo -n "Name: ${pid_name}"
         for pid_signal_name in "${!pid_signal_name_array[@]}"
         do
-            local pid_signal_hex_value=$(echo "${pid_status}" | awk --assign="pid_signal_name=${pid_signal_name}" '$0 ~ pid_signal_name { print $2 }')
+            local pid_signal_hex_value=$(echo "${pid_status}" | /usr/bin/awk --assign="pid_signal_name=${pid_signal_name}" '$0 ~ pid_signal_name { print $2 }')
             declare -a pid_signal_hex_value_delimited_array
 
             # refactor me: create function "hexToBin()"
@@ -199,7 +199,7 @@ main()
             # output results, if there is any signal. also output results, if signal "32" and "33" are set to "1", which actually does not make any sense.
             if [[ "${pid_signal_bin_value_concatenated}" == *"1"* ]]
             then
-                echo -e "Hexadecimal: ${pid_signal_hex_value_delimited_array[@]}\nBinary: ${pid_signal_bin_value_4bit_array[@]}" | column --table
+                echo -e "Hexadecimal: ${pid_signal_hex_value_delimited_array[@]}\nBinary: ${pid_signal_bin_value_4bit_array[@]}" | /usr/bin/column --table
             else
                 echo "No signals found."
             fi
