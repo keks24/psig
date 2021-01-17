@@ -108,6 +108,9 @@ pid_signal_name_array["SigBlk:"]="Signals blocked:"
 pid_signal_name_array["SigIgn:"]="Signals ignored:"
 pid_signal_name_array["SigCgt:"]="Signals caught:"
 underline_regex="[a-zA-Z:() ]"
+declare -a pid_signal_bin_value_4bit_array
+declare -a pid_signal_bin_value_1bit_array
+declare -a pid_signal_hex_value_delimited_array
 
 main()
 {
@@ -118,20 +121,19 @@ main()
         local pid_status_file="status"
         local pid_status=$(< "${pid_directory_path}/${pid_status_file}")
         local pid_name=$(echo "${pid_status}" | /usr/bin/awk --field-separator="Name:\t" '/Name:/ { print $2 }')
-        declare -a pid_signal_bin_value_4bit_array
-        declare -a pid_signal_bin_value_1bit_array
+        local pid_queue=$(echo "${pid_status}" | /usr/bin/awk --field-separator="SigQ:\t" '/SigQ:/ { print $2 }')
         local hex_position
         local hex_value
         local binary_position
         local binary_value
 
         echo ""
-        echo -e "PID: ${pid}"
-        echo -n "Name: ${pid_name}"
+        echo "PID: ${pid}"
+        echo "Name: ${pid_name}"
+        echo -n "Queued: ${pid_queue}"
         for pid_signal_name in "${!pid_signal_name_array[@]}"
         do
             local pid_signal_hex_value=$(echo "${pid_status}" | /usr/bin/awk --assign="pid_signal_name=${pid_signal_name}" '$0 ~ pid_signal_name { print $2 }')
-            declare -a pid_signal_hex_value_delimited_array
 
             # refactor me: create function "hexToBin()"
 
@@ -163,7 +165,7 @@ main()
             # from: 0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 0100 1010 0000 0011
             # to:   0000000000000000000000000000000110000000000000000100101000000011
             # to:   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 0 0 0 0 1 1
-            pid_signal_bin_value_concatenated="${pid_signal_bin_value_4bit_array[@]// /}"
+            local pid_signal_bin_value_concatenated="${pid_signal_bin_value_4bit_array[@]// /}"
             unset pid_signal_bin_value_1bit_array
             for binary_position in $(eval echo "{0..${#pid_signal_bin_value_concatenated}}")
             do
