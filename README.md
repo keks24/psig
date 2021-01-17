@@ -47,6 +47,7 @@ $ psig "${$}" 4710
 
 PID: 23367
 Name: zsh
+Queued: 0/63858
 Signals caught:
 ---------------
 Signal 28: SIGWINCH
@@ -83,6 +84,7 @@ Binary:       0000  0000  0000  0000  0000  0000  0000  0000  0000  1000  0000  
 
 PID: 4710
 Name: awesome
+Queued: 0/63858
 Signals caught:
 ---------------
 Signal 15: SIGTERM
