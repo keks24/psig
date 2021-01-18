@@ -118,94 +118,102 @@ main()
     for pid in "${pid_array[@]}"
     do
         local pid_directory_path="/proc/${pid}"
-        local pid_status_file="status"
-        local pid_status=$(< "${pid_directory_path}/${pid_status_file}")
-        local pid_name=$(/usr/bin/awk --field-separator="Name:\t" '/Name:/ { print $2 }' <<< "${pid_status}")
-        local pid_queue=$(/usr/bin/awk --field-separator="SigQ:\t" '/SigQ:/ { print $2 }' <<< "${pid_status}")
-        local hex_position
-        local hex_value
-        local binary_position
-        local binary_value
 
-        echo ""
-        echo "PID: ${pid}"
-        echo "Name: ${pid_name}"
-        echo -n "Queued: ${pid_queue}"
-        for pid_signal_name in "${!pid_signal_name_array[@]}"
-        do
-            local pid_signal_hex_value=$(/usr/bin/awk --assign="pid_signal_name=${pid_signal_name}" '$0 ~ pid_signal_name { print $2 }' <<< "${pid_status}")
+        if [[ ! -d "${pid_directory_path}" ]]
+        then
+            echo -e "\e[01;31mCould not find directory: '${pid_directory_path}'.\e[0m" >&2
+            exit 1
+        else
+            local pid_status_file="status"
+            local pid_file="${pid_directory_path}/${pid_status_file}"
+            local pid_status=$(< "${pid_file}")
+            local pid_name=$(/usr/bin/awk --field-separator="Name:\t" '/Name:/ { print $2 }' <<< "${pid_status}")
+            local pid_queue=$(/usr/bin/awk --field-separator="SigQ:\t" '/SigQ:/ { print $2 }' <<< "${pid_status}")
+            local hex_position
+            local hex_value
+            local binary_position
+            local binary_value
 
-            # refactor me: create function "hexToBin()"
-
-            # split hexadecimal string per character
-            # from: 0000000180004a03
-            # to:   0 0 0 0 0 0 0 1 8 0 0 0 4 a 0 3
-            unset pid_signal_hex_value_delimited_array
-            for hex_position in $(eval echo "{0..${#pid_signal_hex_value}}")
-            do
-                pid_signal_hex_value_delimited_array+=("${pid_signal_hex_value:${hex_position}:1}")
-            done
-
-            # convert hexadecimal to binary per character
-            # from: 0    0    0    0    0    0    0    1    8    0    0    0    4    a    0    3
-            # to:   0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 0100 1010 0000 0011
-            unset pid_signal_bin_value_4bit_array
-            for hex_value in "${pid_signal_hex_value_delimited_array[@]}"
-            do
-                if [[ "${hex_value}" =~ ^[0-9]$ ]]
-                then
-                    pid_signal_bin_value_4bit_array+="${bin_value_4bit_array[${hex_value}]} "
-                elif [[ "${hex_value}" =~ ^[a-fA-F]$ ]]
-                then
-                    pid_signal_bin_value_4bit_array+="${bin_value_4bit_array[hex_value_array[${hex_value}]]} "
-                fi
-            done
-
-            # concatenate binary string and split string per character
-            # from: 0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 0100 1010 0000 0011
-            # to:   0000000000000000000000000000000110000000000000000100101000000011
-            # to:   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 0 0 0 0 1 1
-            local pid_signal_bin_value_concatenated="${pid_signal_bin_value_4bit_array[@]// /}"
-            unset pid_signal_bin_value_1bit_array
-            for binary_position in $(eval echo "{0..${#pid_signal_bin_value_concatenated}}")
-            do
-                pid_signal_bin_value_1bit_array+=("${pid_signal_bin_value_concatenated:${binary_position}:1}")
-            done
-
-            # convert binary to signal name per character
-            # from: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 0 0 0 0 1 1
-            # to:   Signal <signal_number>: <signal_name>
-            local binary_array_index="${#pid_signal_bin_value_concatenated}"
             echo ""
-            echo "${pid_signal_name_array[${pid_signal_name}]}"
-            echo "${pid_signal_name_array[${pid_signal_name}]//${underline_regex}/-}"
-            for binary_value in "${pid_signal_bin_value_1bit_array[@]}"
+            echo "PID: ${pid}"
+            echo "Name: ${pid_name}"
+            echo -n "Queued: ${pid_queue}"
+            for pid_signal_name in "${!pid_signal_name_array[@]}"
             do
-                # signal "32" and "33" are undefined
-                if [[ "${binary_array_index}" == "32" || "${binary_array_index}" == "33" ]]
-                then
+                local pid_signal_hex_value=$(/usr/bin/awk --assign="pid_signal_name=${pid_signal_name}" '$0 ~ pid_signal_name { print $2 }' <<< "${pid_status}")
+
+                # refactor me: create function "hexToBin()"
+
+                # split hexadecimal string per character
+                # from: 0000000180004a03
+                # to:   0 0 0 0 0 0 0 1 8 0 0 0 4 a 0 3
+                unset pid_signal_hex_value_delimited_array
+                for hex_position in $(eval echo "{0..${#pid_signal_hex_value}}")
+                do
+                    pid_signal_hex_value_delimited_array+=("${pid_signal_hex_value:${hex_position}:1}")
+                done
+
+                # convert hexadecimal to binary per character
+                # from: 0    0    0    0    0    0    0    1    8    0    0    0    4    a    0    3
+                # to:   0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 0100 1010 0000 0011
+                unset pid_signal_bin_value_4bit_array
+                for hex_value in "${pid_signal_hex_value_delimited_array[@]}"
+                do
+                    if [[ "${hex_value}" =~ ^[0-9]$ ]]
+                    then
+                        pid_signal_bin_value_4bit_array+="${bin_value_4bit_array[${hex_value}]} "
+                    elif [[ "${hex_value}" =~ ^[a-fA-F]$ ]]
+                    then
+                        pid_signal_bin_value_4bit_array+="${bin_value_4bit_array[hex_value_array[${hex_value}]]} "
+                    fi
+                done
+
+                # concatenate binary string and split string per character
+                # from: 0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 0100 1010 0000 0011
+                # to:   0000000000000000000000000000000110000000000000000100101000000011
+                # to:   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 0 0 0 0 1 1
+                local pid_signal_bin_value_concatenated="${pid_signal_bin_value_4bit_array[@]// /}"
+                unset pid_signal_bin_value_1bit_array
+                for binary_position in $(eval echo "{0..${#pid_signal_bin_value_concatenated}}")
+                do
+                    pid_signal_bin_value_1bit_array+=("${pid_signal_bin_value_concatenated:${binary_position}:1}")
+                done
+
+                # convert binary to signal name per character
+                # from: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 0 0 0 0 1 1
+                # to:   Signal <signal_number>: <signal_name>
+                local binary_array_index="${#pid_signal_bin_value_concatenated}"
+                echo ""
+                echo "${pid_signal_name_array[${pid_signal_name}]}"
+                echo "${pid_signal_name_array[${pid_signal_name}]//${underline_regex}/-}"
+                for binary_value in "${pid_signal_bin_value_1bit_array[@]}"
+                do
+                    # signal "32" and "33" are undefined
+                    if [[ "${binary_array_index}" == "32" || "${binary_array_index}" == "33" ]]
+                    then
+                        (( binary_array_index-- ))
+                        continue
+                    elif [[ "${binary_value}" == "0" ]]
+                    then
+                        (( binary_array_index-- ))
+                        continue
+                    elif [[ "${binary_value}" == "1" ]]
+                    then
+                        echo "Signal ${binary_array_index}: ${pid_signal_array[${binary_array_index}]}"
+                    fi
+
                     (( binary_array_index-- ))
-                    continue
-                elif [[ "${binary_value}" == "0" ]]
+                done
+
+                # output results, if there is any signal. also output results, if signal "32" and "33" are set to "1", which actually does not make any sense.
+                if [[ "${pid_signal_bin_value_concatenated}" == *"1"* ]]
                 then
-                    (( binary_array_index-- ))
-                    continue
-                elif [[ "${binary_value}" == "1" ]]
-                then
-                    echo "Signal ${binary_array_index}: ${pid_signal_array[${binary_array_index}]}"
+                    echo -e "Hexadecimal: ${pid_signal_hex_value_delimited_array[@]}\nBinary: ${pid_signal_bin_value_4bit_array[@]}" | /usr/bin/column --table
+                else
+                    echo "No signals found."
                 fi
-
-                (( binary_array_index-- ))
             done
-
-            # output results, if there is any signal. also output results, if signal "32" and "33" are set to "1", which actually does not make any sense.
-            if [[ "${pid_signal_bin_value_concatenated}" == *"1"* ]]
-            then
-                echo -e "Hexadecimal: ${pid_signal_hex_value_delimited_array[@]}\nBinary: ${pid_signal_bin_value_4bit_array[@]}" | /usr/bin/column --table
-            else
-                echo "No signals found."
-            fi
-        done
+        fi
     done
 }
 
