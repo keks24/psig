@@ -107,10 +107,10 @@ pid_signal_name_array["ShdPnd:"]="Signals pending (process):"
 pid_signal_name_array["SigBlk:"]="Signals blocked:"
 pid_signal_name_array["SigIgn:"]="Signals ignored:"
 pid_signal_name_array["SigCgt:"]="Signals caught:"
-underline_regex="[a-zA-Z:() ]"
 declare -a pid_signal_bin_value_4bit_array
 declare -a pid_signal_bin_value_1bit_array
 declare -a pid_signal_hex_value_delimited_array
+underline_regex="[a-zA-Z:() ]"
 
 main()
 {
