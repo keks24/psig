@@ -120,8 +120,8 @@ main()
         local pid_directory_path="/proc/${pid}"
         local pid_status_file="status"
         local pid_status=$(< "${pid_directory_path}/${pid_status_file}")
-        local pid_name=$(echo "${pid_status}" | /usr/bin/awk --field-separator="Name:\t" '/Name:/ { print $2 }')
-        local pid_queue=$(echo "${pid_status}" | /usr/bin/awk --field-separator="SigQ:\t" '/SigQ:/ { print $2 }')
+        local pid_name=$(/usr/bin/awk --field-separator="Name:\t" '/Name:/ { print $2 }' <<< "${pid_status}")
+        local pid_queue=$(/usr/bin/awk --field-separator="SigQ:\t" '/SigQ:/ { print $2 }' <<< "${pid_status}")
         local hex_position
         local hex_value
         local binary_position
@@ -133,7 +133,7 @@ main()
         echo -n "Queued: ${pid_queue}"
         for pid_signal_name in "${!pid_signal_name_array[@]}"
         do
-            local pid_signal_hex_value=$(echo "${pid_status}" | /usr/bin/awk --assign="pid_signal_name=${pid_signal_name}" '$0 ~ pid_signal_name { print $2 }')
+            local pid_signal_hex_value=$(/usr/bin/awk --assign="pid_signal_name=${pid_signal_name}" '$0 ~ pid_signal_name { print $2 }' <<< "${pid_status}")
 
             # refactor me: create function "hexToBin()"
 
