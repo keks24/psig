@@ -29,7 +29,7 @@ $ echo "${PATH//:/\n}"
 # Installation
 Clone the repository into your current working directory:
 ```bash
-$ git clone "https://gitlab.com/keks24/psig.git"
+$ git clone "https://codeberg.org/keks24/psig.git"
 ```
 
 Copy all necessary files:
@@ -42,8 +42,6 @@ $ chmod 755 "/usr/local/bin/psig"
 # Usage
 ```bash
 $ psig "${$}" 4710
-```
-```no-highlight
 
 PID: 23367
 Name: zsh
