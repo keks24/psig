@@ -208,7 +208,7 @@ main()
                 # output results, if there is any signal. also output results, if signal "32" and "33" are set to "1", which actually does not make any sense.
                 if [[ "${pid_signal_bin_value_concatenated}" == *"1"* ]]
                 then
-                    echo -e "Hexadecimal: ${pid_signal_hex_value_delimited_array[@]}\nBinary: ${pid_signal_bin_value_4bit_array[@]}" | /usr/bin/column --table
+                    echo -e "Hexadecimal: ${pid_signal_hex_value_delimited_array[@]}\nBinary: ${pid_signal_bin_value_4bit_array[@]}" | /usr/bin/column -t
                 else
                     echo "No signals found."
                 fi
