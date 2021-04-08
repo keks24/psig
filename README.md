@@ -41,8 +41,12 @@ $ chmod 755 "/usr/local/bin/psig"
 
 # Usage
 ```bash
-$ psig "${$}" 4710
+$ psig <pid> [pid]...
+```
 
+## Example
+```bash
+$ psig "${$}" 4710
 PID: 23367
 Name: zsh
 Queued: 0/63858
