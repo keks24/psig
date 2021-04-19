@@ -41,7 +41,7 @@ $ chmod 755 "/usr/local/bin/psig"
 
 # Usage
 ```bash
-$ psig <pid> [pid]...
+$ psig <pid> [pid...]
 ```
 
 ## Example
