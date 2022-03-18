@@ -128,6 +128,8 @@ main()
             local pid_file="${pid_directory_path}/${pid_status_file}"
             local pid_status=$(< "${pid_file}")
             local pid_name=$(/usr/bin/awk --field-separator="Name:\t" '/Name:/ { print $2 }' <<< "${pid_status}")
+            local pid_uid=$(/usr/bin/awk --field-separator="Uid:\t" '/Uid:/ { gsub("\t", " ", $2); print $2 }' <<< "${pid_status}")
+            local pid_gid=$(/usr/bin/awk --field-separator="Gid:\t" '/Gid:/ { gsub("\t", " ", $2); print $2 }' <<< "${pid_status}")
             local pid_queue=$(/usr/bin/awk --field-separator="SigQ:\t" '/SigQ:/ { print $2 }' <<< "${pid_status}")
             local hex_position
             local hex_value
@@ -137,6 +139,8 @@ main()
             echo ""
             echo "PID: ${pid}"
             echo "Name: ${pid_name}"
+            echo "UID: ${pid_uid}"
+            echo "GID: ${pid_gid}"
             echo -n "Queued: ${pid_queue}"
             for pid_signal_name in "${!pid_signal_name_array[@]}"
             do
