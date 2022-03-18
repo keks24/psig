@@ -141,7 +141,7 @@ main()
             echo "Name: ${pid_name}"
             echo "UID: ${pid_uid}"
             echo "GID: ${pid_gid}"
-            echo -n "Queued: ${pid_queue}"
+            echo "Queued: ${pid_queue}"
             for pid_signal_name in "${!pid_signal_name_array[@]}"
             do
                 local pid_signal_hex_value=$(/usr/bin/awk --assign="pid_signal_name=${pid_signal_name}" '$0 ~ pid_signal_name { print $2 }' <<< "${pid_status}")
@@ -218,6 +218,7 @@ main()
                 fi
             done
         fi
+        echo -e "\n############################################################################################################"
     done
 }
 
