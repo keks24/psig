@@ -47,6 +47,7 @@ $ psig <pid> [pid...]
 ## Example
 ```bash
 $ psig "${$}" 4710
+
 PID: 23367
 Name: zsh
 UID: 1000 1000 1000 1000
